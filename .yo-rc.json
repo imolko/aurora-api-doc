@@ -1,0 +1,11 @@
+{
+  "generator-openapi-repo": {
+    "importExistingSpec": true,
+    "importedSpec": "/home/yflores/Developer/zauron/aurora/docs/swagger.yaml",
+    "name": "aurora",
+    "repo": ":imolko/aurora-api-doc",
+    "splitSpec": false,
+    "samples": true,
+    "installSwaggerUI": true
+  }
+}

@@ -1,0 +1,1281 @@
+openapi: 3.0.0
+servers:
+- description: Produccion
+  url: https://imolko.com/aurora-ws
+- description: Ambiente Alfa
+  url: https://{droplet}.imolko.net/aurora-ws
+  variables:
+    droplet:
+      default: groups
+      description: Especifica el droplet donde se ejecuta el ambiente de prueba.
+- description: Developer
+  url: https://dev.imolko.net/aurora-ws
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/imolko/aurora/1.0.0
+info:
+  version: "1.0.0"
+  title: Documentacion del Api de aurora.
+  description: >-
+    Documentacion del api de aurora.
+security:
+- kansa: []
+- kansa-alfa: []
+- kansa-dev: []
+tags:
+- name: usuarios
+  description: Operaciones sobre el usuario
+- name: grupos
+  description: Operaciones sobre grupos.
+- name: contactos
+  description: Operaciones sobre contactos.
+paths:
+  /users:
+    get:
+      tags:
+      - usuarios
+      summary: Obtiene la lista de usuarios
+      parameters:
+      - $ref: '#/components/parameters/SysParamFilter'
+      - $ref: '#/components/parameters/SysParamFields'
+      - $ref: '#/components/parameters/SysParamPag'
+      - $ref: '#/components/parameters/SysParamExpand'
+      - $ref: '#/components/parameters/SysParamSearch'
+      - $ref: '#/components/parameters/SysParamSort'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/RespCollection'
+                - type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Usuario'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/context-info:
+    get:
+      tags:
+      - usuarios
+      summary: Muestra informacion del contexto.
+      description: Muestra informacion del contexto del usuario que esta authenticado.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContextInfo'
+              example:
+                config:
+                  contexts:
+                  - lastAccess:
+                      $date: '2018-10-24T19:24:26.943Z'
+                    name: yohany
+                    show: false
+                    state: DITTO
+                  useLastContext: true
+                kansaUser:
+                  access:
+                    manageGroupMembership: true
+                    view: true
+                    mapRoles: true
+                    impersonate: true
+                    manage: true
+                  applicationRoles: null
+                  attributes:
+                    country:
+                    - VE
+                    utcOffset:
+                    - America/Caracas
+                    genre:
+                    - M
+                    empresa:
+                    - Yohany
+                    locale:
+                    - es
+                  clientConsents: null
+                  clientRoles: null
+                  createdTimestamp: 1511394276715
+                  credentials: null
+                  disableableCredentialTypes:
+                  - password
+                  email: yohanyflores@imolko.com
+                  emailVerified: true
+                  enabled: true
+                  federatedIdentities: null
+                  federationLink: null
+                  firstName: Yohany
+                  groups: null
+                  id: 7477a361-fd8a-41f4-841b-fb69633c7d9b
+                  lastName: Flores
+                  notBefore: 1511726420
+                  origin: null
+                  realmRoles: null
+                  requiredActions: []
+                  self: null
+                  serviceAccountClientId: null
+                  socialLinks: null
+                  totp: false
+                  username: yohany
+                user:
+                  collaborators: null
+                  customCalendar1: null
+                  customCalendar2: null
+                  customCalendar3: null
+                  customCalendar4: null
+                  customCalendar5: null
+                  empresaId: 00001d05-cb5d-41f9-ab9b-eb39c1c0133c
+                  id: 56342de45402004f93e08b45
+                  lastContext: yohany
+                  locale: null
+                  members: 2
+                  myContexts:
+                    contexts:
+                    - lastAccess:
+                        $date: '2018-10-24T19:24:26.943Z'
+                      name: yohany
+                      show: false
+                      state: DITTO
+                    useLastContext: true
+                  startingSteps:
+                  - executed:
+                      $date: '2018-10-24T19:21:47.360Z'
+                    name: ENROLL_TOUR_VIEWED
+                    state: enroll.tour
+                  username: yohany
+                  utcOffset: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/current_user:
+    get:
+      tags:
+      - usuarios
+      summary: Obtiene informacion del usuario actual
+      description: Obtiene la informacion del usuario que esta authenticado.
+      parameters:
+      - $ref: '#/components/parameters/SysParamExpand'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+              example:
+                customCalendar1: null
+                customCalendar2: null
+                customCalendar3: null
+                customCalendar4: null
+                customCalendar5: null
+                empresaId: 00001d05-cb5d-41f9-ab9b-eb39c1c0133c
+                id: 56342de45402004f93e08b45
+                lastContext: yohany
+                locale: null
+                members: 2
+                myContexts:
+                  useLastContext: true
+                username: yohany
+                utcOffset: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/{username}:
+    get:
+      tags:
+      - usuarios
+      summary: Obtiene informacion de un usuario
+      description: >-
+        Obtiene informacion de un usuario, se necesita ser el owner, o tener un role ORB_ORBITER_ADMIN-ORBITER en kansa.
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      - $ref: '#/components/parameters/SysParamExpand'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+              example:
+                customCalendar1: null
+                customCalendar2: null
+                customCalendar3: null
+                customCalendar4: null
+                customCalendar5: null
+                empresaId: 00001d05-cb5d-41f9-ab9b-eb39c1c0133c
+                id: 56342de45402004f93e08b45
+                lastContext: yohany
+                locale: null
+                members: 2
+                myContexts:
+                  useLastContext: true
+                username: yohany
+                utcOffset: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Not Found
+        default:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+      - usuarios
+      summary: Actualiza informacion del usuario.
+      description: Actualiza los datos simples actualizables de un usuario. como su empresa, su fecha de registro, su status. Se requiere el role ORB_ORBITER_ADMIN-ORBITER o OWNER.
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      requestBody:
+        description: Obtiene la lista de acciones.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioBase'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioBase'
+              example:
+                empresaId: 00001d05-cb5d-41f9-ab9b-eb39c1c0133c
+                locale: null
+                utcOffset: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Not Found
+        default:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+      - usuarios
+      summary: Elimna informacion del usuario.
+      description: Borra un usuario, se requiere role ORB_ORBITER_ADMIN-ORBITER, para realizar esta operacion.
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioBase'
+              example:
+                empresaId: 00001d05-cb5d-41f9-ab9b-eb39c1c0133c
+                locale: null
+                utcOffset: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Not Found
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/{username}/execute-actions-email:
+    put:
+      tags:
+      - usuarios
+      summary: Verifica un email
+      description: Verifica las acciones de un email.
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      requestBody:
+        description: Obtiene la lista de acciones.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+              example:
+                success: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/{username}/~check:
+    get:
+      tags:
+      - usuarios
+      summary: Verifica si un uusario existe.
+      description: Verifica si un uusario existe o no.
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+              example:
+                success: true
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/{username}/~count-members:
+    post:
+      tags:
+      - usuarios
+      summary: Solicita recontar le numero de avatares o contactos.
+      description: Hace una solicitud asyncrona para contar el numero de avatares o contactos.
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      security: []
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /users/{username}/groups:
+    get:
+      tags:
+      - grupos
+      summary: Obtiene los grupos del usuario.
+      description: Obtiene paginas de grupos.
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+      - grupos
+      summary: Crea un nuevo grupo
+      description: Crea un nuevo grupo para el owner. El usuario debe tener perm iso de signal sobre este owner.
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      requestBody:
+        description: Informacion del grupo a crear.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+            example:
+              owner: yohany
+              name: grupito-maracuchos
+              title: Grupo de maracuchos
+              description: El grupo de todos los maracuchos vergatarios.
+              active: true
+              type: TAGS
+              tags: []
+              birthdayIdCriteria: ~
+              basedGids: []
+              enterRules: []
+              exitRules: []
+              extendRules: []
+              initRule: ""
+              expireTime: 0
+              onEnter: []
+              onExit: []
+              onExpire: []
+              onExtend: []
+      responses:
+        '201':
+          description: OK
+          headers:
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          links:
+            GetGroupById:
+              description: >
+                Manipula informacion del grupo.
+              operationId: 'getGroup'
+              parameters:
+                username: '$response.body#/owner'
+                gid: '$response.body#/id'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/{username}/groups/{gid}:
+    get:
+      tags:
+      - grupos
+      summary: Lee informacion del grupo
+      description: Lee informacion del grupo.
+      operationId: getGroup
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      - $ref: '#/components/parameters/GID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+              example: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+components:
+  parameters:
+    Username:
+      name: username
+      in: path
+      required: true
+      schema:
+        type: string
+    GID:
+      name: gid
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[a-f0-9]{24,24}$'
+    SysParamFilter:
+      in: query
+      name: $filter
+      description: Especifica un filtro usando querys de mongo, que se realizaran sobre la coleccion usuarios.
+      schema:
+        type: string
+        example: "{username: 'yohany'}"
+        default: '{}'
+    SysParamFields:
+      in: query
+      name: $fields
+      description: Especifica los campos que desea obtener, proyeccion.
+      schema:
+        type: string
+        example: '{username: 1}'
+        default: '{}'
+    SysParamPag:
+      in: query
+      name: $pag
+      schema:
+        type: string
+        example: "{page:0,size:50,count:true}"
+        default: "{page:0,size:25,count:true}"
+    SysParamExpand:
+      in: query
+      name: $expand
+      schema:
+        type: string
+        example: '{username: 1}'
+        default: '{}'
+    SysParamSearch:
+      in: query
+      name: $search
+      description: Permite definir un string a buscar, realizando busqueda full text.
+      schema:
+        type: string
+        example: 'roberto'
+    SysParamSort:
+      in: query
+      name: $sort
+      description: Permite definir el ordenamiento.
+      schema:
+        type: string
+        example: '{username: -1}'
+  schemas:
+    ContextInfo:
+      description: Informacion del contexto para el usuario.
+      type: object
+      properties:
+        kansaUser:
+          $ref: '#/components/schemas/UserRepresentation'
+        user:
+          $ref: '#/components/schemas/Usuario'
+        config:
+          $ref: '#/components/schemas/ContextConfig'
+
+    UserRepresentation:
+      description: Informacion del Usuario al estilo Kansa.
+      type: object
+      properties:
+        self:
+          type: string
+        id:
+          type: string
+        origin:
+          type: string
+        createdTimestamp:
+          type: integer
+          format: int64
+        username:
+          type: string
+        enabled:
+          type: boolean
+        totp:
+          type: boolean
+        emailVerified:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        federationLink:
+          type: string
+        serviceAccountClientId:
+          type: string
+        attributes:
+          type: object
+        credentials:
+          type: array
+          items:
+            type: object
+        disableableCredentialTypes:
+          type: array
+          items:
+            type: string
+        requiredActions:
+          type: array
+          items:
+            type: string
+        federatedIdentities:
+          type: array
+          items:
+            type: object
+        realmRoles:
+          type: array
+          items:
+            type: string
+        clientRoles:
+          type: object
+        clientConsents:
+          type: array
+          items:
+            type: object
+        notBefore:
+          type: integer
+        groups:
+          type: array
+          items:
+            type: string
+        access:
+          type: object
+
+    UsuarioBase:
+      type: object
+      description: Esta clase Modela los datos basicos de un usuario.
+      properties:
+        empresaId:
+          type: string
+          description: Especifica el empresaId..
+          example: 00001d05-cb5d-41f9-ab9b-eb39c1c0133c
+        locale:
+          type: string
+          description: Especifica el locale del usuario, para la plataforma.
+          example: "es"
+        utcOffset:
+          type: string
+          description: EL utcOffset o timeZone
+          example: "America/Caracas"
+    Usuario:
+      description: Esta clase Modela un Usuario. Las terminologias usadas estan de acuerdo a FOAF (http://wiki.foaf-project.org/w/DescribingAPerson)
+      allOf:
+      - $ref: '#/components/schemas/UsuarioBase'
+      - type: object
+        required:
+        - username
+        properties:
+          id:
+            type: string
+            description: Id dentro de la base de datos, o del sistema.
+            example: ef12345fabcdf23239088efa
+          username:
+            type: string
+            description: El username unico dentro del sistema.
+            example: yohany
+            pattern: '^[A-Za-z][A-Za-z0-9_]{4,}$'
+          members:
+            type: integer
+            readOnly: true
+            format: int64
+            description: EL numero de avatares o contactos.
+            example: 52
+          startingSteps:
+            type: array
+            description: "Los Steps que lleva realizado."
+            items:
+              type: object
+              description: "Los Steps que lleva realizado."
+              # TODO: Definir el schema de Step.
+          collaborators:
+            type: array
+            readOnly: true
+            description: "Los colaboradores de este usuario."
+            items:
+              $ref: '#/components/schemas/Collaborator'
+          myContexts:
+            $ref: '#/components/schemas/ContextConfig'
+          lastContext:
+            type: string
+            description: Guarda el ultimo contexto usado por el usuario
+          customCalendar1:
+            $ref: '#/components/schemas/BusinessCalendar'
+          customCalendar2:
+            $ref: '#/components/schemas/BusinessCalendar'
+          customCalendar3:
+            $ref: '#/components/schemas/BusinessCalendar'
+          customCalendar4:
+            $ref: '#/components/schemas/BusinessCalendar'
+          customCalendar5:
+            $ref: '#/components/schemas/BusinessCalendar'
+
+    ContextConfig:
+      description: Configura el Contexto que puede ver el usuario.
+      type: object
+      properties:
+        contexts:
+          description: Indica los contextos en los que esta colaborando..
+          type: array
+          items:
+            $ref: '#/components/schemas/ContextStatus'
+        useLastContext:
+          description: Especifica que se quiere usar el ultimo contexto seleccionado por defecto.
+          type: boolean
+          default: true
+
+    ContextStatus:
+      description: Almacenar el status del contexto en la configuraion de Mycontexts.
+      type: object
+      properties:
+        name:
+          description: El nombre del contexto.
+          type: string
+        show:
+          description: Especifica si se muestra o no el context.
+          type: boolean
+        lastAccess:
+          description: Especifica la fecha del ultimo accesso.
+          type: object
+        state:
+          $ref: '#/components/schemas/ContextStatusEnum'
+
+    ContextStatusEnum:
+      description: Status del context.
+      type: string
+      enum:
+      - NEW
+      - DITTO
+      - DEL
+
+    Collaborator:
+      description: Modela un colaborador.
+      type: object
+      required:
+      - collaborator
+      - roles
+      properties:
+        collaborator:
+          description: EL username del collaborador.
+          type: string
+        roles:
+          description: La lista de roles, para este colaborador.
+          type: array
+          items:
+            $ref: '#/components/schemas/CollaboratorRoles'
+          minItems: 1
+
+    CollaboratorRoles:
+      type: string
+      enum:
+      - ALL
+      - SIGNALS
+      - PULSES_GLOBAL
+      - PULSES_DIRECT
+      - CONFIGURATION
+
+    BusinessCalendar:
+      type: object
+      description: Define una interfaz comun para el manejo de business calendar.
+      # TODO: Manejo de las propiedades.
+
+    RespCollection:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indica si la operacion se efectuo correctamente.
+        message:
+          type: string
+          description: Especifica un mensaje a mostrar.
+        count:
+          type: integer
+          description: Indica el numero de elementos de la coleccion.
+          format: int64
+          example: 30
+        sysParam:
+          type: object
+          description: Define el sysparam de llamada.
+        data:
+          type: array
+          description: La data de la coleccion.
+          items:
+            type: object
+
+    GroupPure:
+      description: Modela un grupo puro
+      allOf:
+      - $ref: '#/components/schemas/GroupBase'
+      - type: object
+        required:
+        - enterRules
+        - exitRules
+        - initRule
+        properties:
+          members:
+            description: >
+              Especifica el numero de mienbros de este grupo.
+            readOnly: true
+            type: integer
+            format: int64
+          status:
+            description: >
+              *Especifica el estatus de un grupo:*
+
+              * *ACTIVE*: Especifica un grupo activo.
+
+              * *PAUSED*: Especifica un grupo inactivo. Los grupos inactivos no entran en el runner, Puede ser tomado com una pausa del grupo. Solo se pueden pausar los grupos que estan basados solo en el procesamiento de actividades.
+
+              * *BUILDING*: Es un grupo que se esta construyendo, Son para los grupos basados en avatares, Ya que estos requieren una evaluacion previa de la data Y un etiquetado posterior.
+
+              * *DELETING*: Indicaun grupo marcado para ser borrado.
+            readOnly: true
+            type: string
+            enum: [ACTIVE, PAUSED, BUILDING, DELETING]
+          err:
+            description: Especifica el mensaje de error asociado al status.
+            readOnly: true
+            type: string
+          enterRules:
+            description: >
+              Especifica las condiciones para entrar al grupo.
+            type: array
+            items:
+              $ref: '#/components/schemas/GroupRule'
+          exitRules:
+            description: >
+              Especifica las condiciones para salir del grupo.
+            type: array
+            items:
+              $ref: '#/components/schemas/GroupRule'
+          extendRules:
+            description: >
+              Especifica las condiciones para extender la membresia del grupo.
+            type: array
+            items:
+              $ref: '#/components/schemas/GroupRule'
+          initRule:
+            description: >
+              Especifica la consulta de creacion del grupo. Se incluiran los avatares que concuerden el query de mongo.
+            type: string
+            maxLength: 2048
+          expireTime:
+            description: >
+              El tiempo de empiracion para los grupos puros.
+            type: integer
+            format: int64
+            minimum: 0
+          onEnter:
+            description: >
+              Especifica la lista de acciones ejecutadas al entrar un miembro al grupo.
+            type: array
+            items:
+              $ref: '#/components/schemas/GroupAction'
+          onExit:
+            description: >
+              Lista de acciones ejecutadas al salir del grupo.
+            type: array
+            items:
+              $ref: '#/components/schemas/GroupAction'
+          onExpire:
+            description: >
+              Para grupos que tienen expiracion, especifica la accion a realizar cuando un miembro del grupo expira.
+            type: array
+            items:
+              $ref: '#/components/schemas/GroupAction'
+          onExtend:
+            description: >
+              Para grupos que tienen expiracion, especifica la accion a realizar cuando un miembro del grupo expira.
+            type: array
+            items:
+              $ref: '#/components/schemas/GroupAction'
+      example:
+        owner: yohany
+        name: grupito-maracuchos
+        title: Grupo de maracuchos
+        description: El grupo de todos los maracuchos vergatarios.
+        type: TAGS
+        tags: []
+        birthdayIdCriteria: ~
+        basedGids: []
+        enterRules: []
+        exitRules: []
+        extendRules: []
+        initRule: ""
+        expireTime: 0
+        onEnter: []
+        onExit: []
+        onExpire: []
+        onExtend: []
+
+    GroupCombined:
+      description: Especifica un tipo de grupo que es la union o interseccion de varios grupos puros.
+      allOf:
+      - $ref: '#/components/schemas/GroupBase'
+      - type: object
+        properties:
+          birthdayIdCriteria:
+            $ref: '#/components/schemas/DayOfYearID'
+          basedGids:
+            type: array
+            items:
+              type: string
+              pattern: '^[a-f0-9]{24,24}$'
+
+    GroupTagged:
+      description: Especifica un tipo de grupo que esta basado en tags o etiquetas.
+      allOf:
+      - $ref: '#/components/schemas/GroupBase'
+      - type: object
+        properties:
+          tags:
+            description: Para grupos basado en tags. Se colocan los tags relacionados. Se permiten hasta 10 tags. Cada tag debe cumplir la convension de nombres de aurora.
+            maxItems: 10
+            type: array
+            items:
+              type: string
+              pattern: '^[a-z][a-z0-9_]*$'
+          birthdayIdCriteria:
+            $ref: '#/components/schemas/DayOfYearID'
+      example:
+        owner: yohany
+        name: grupito-maracuchos
+        title: Grupo de maracuchos
+        description: El grupo de todos los maracuchos vergatarios.
+        type: TAGS
+        tags:
+        - maracuchos
+
+
+    GroupBase:
+      description: Propiedades basicas comunes de los distintos grupo.
+      type: object
+      required:
+      - owner
+      - active
+      - name
+      - title
+      - type
+      properties:
+        id:
+          readOnly: true
+          description: El id del grupo.
+          type: string
+          pattern: '^[a-f0-9]{24,24}$'
+        owner:
+          description: Propietario del grupo.
+          type: string
+        active:
+          deprecated: true
+          description: Especifica si el grupo esta activo.
+          type: boolean
+          enum: [true]
+        created:
+          description: La fecha de creacion del grupo. **Solo Lectura**
+          readOnly: true
+          type: object
+          properties:
+            "$date":
+              type: string
+              format: date-time
+        updated:
+          readOnly: true
+          description: La fecha de la ultima actualizacion del Grupo. **Solo Lectura**
+          type: object
+          properties:
+            "$date":
+              type: string
+              format: date-time
+        history:
+          description: historico de Activaciones y desactivaciones.
+          readOnly: true
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupHistory'
+        historySize:
+          description: Especifica la historia de las activaciones y desactivaciones, En la posicion 0 estaran las mas recientes.
+          readOnly: true
+          type: integer
+          format: int64
+        name:
+          deprecated: true
+          description: El nombre del Grupo.
+          type: string
+          maxLength: 50
+          pattern: '^.*\S.*$'
+        title:
+          description: El nombre del Grupo.
+          type: string
+          maxLength: 50
+          pattern: '^.*\S.*$'
+        description:
+          description: Descripcion del grupo.
+          type: string
+          maxLength: 250
+        type:
+          $ref: '#/components/schemas/GroupType'
+
+    Group:
+      description: >
+        Especifica una de las combinaciones de grupos. Se discrimina por la propiedad  **type**, y sigue uno de los esquemas propuestos.
+        Si la propiedad **type** es `PURE` denota un GroupPure, si la propiedad **type** es `TAGS` o `TAGS_ALL` el esquema a utilizar es GroupTagged y
+        por ultimo si la propiedad **type** es `UNION` o `INTERCEPTION` se utiliza el esquema GroupCombined.
+      oneOf:
+      - $ref: '#/components/schemas/GroupPure'
+      - $ref: '#/components/schemas/GroupCombined'
+      - $ref: '#/components/schemas/GroupTagged'
+      discriminator:
+        propertyName: type
+        mapping:
+          PURE: '#/components/schemas/GroupPure'
+          UNION: '#/components/schemas/GroupCombined'
+          INTERCEPTION: '#/components/schemas/GroupCombined'
+          TAGS: '#/components/schemas/GroupTagged'
+          TAGS_ALL: '#/components/schemas/GroupTagged'
+
+    GroupRule:
+      type: object
+      properties:
+        title:
+          description: Especifica el titulo para la regla parcial.
+          maxLength: 50
+          type: string
+        script:
+          description: Especifica el script a ser evaluado.
+          maxLength: 5242880
+          type: string
+        type:
+          $ref: '#/components/schemas/GroupRuleType'
+        ttl:
+          description: Especifica una duracion para el resultaod de la rule luego de su evaluacion en true
+          type: integer
+          format: int64
+        activities:
+          description:  Especifica las actividades para las que son validas
+          type: array
+          items:
+            $ref: '#/components/schemas/ActividadesEnum'
+        atLeast:
+          description: Especifica que la ocurriencia de la rule debe ser al amenos la especificada en este.
+          type: integer
+          format: int64
+          minimum: 1
+
+    GroupRuleType:
+      description: >
+        Especifica el tipo de Rules. Estos lenguajes deben ser soportados por el backend en golang
+
+          * *GOEVALUATE*:  Go evaluate como lenguaje para definir las rules. El mejor segun las pruebas.
+
+          * *ANKO*: Anko como lenguaje para definir las rules.
+
+          * *GVAL*: GVAL como lenguajes.
+
+      type: string
+      enum: [GOEVALUATE. ANKO, GVAL]
+
+    GroupAction:
+      description: Especifica una accion para el grupo. Se deben extender las clases especificas que capturan la accion Con sus respectivos parametros.
+      type: object
+
+    GroupStatus:
+      description: >
+        *Especifica el status de un grupo:*
+
+        * *ACTIVE*: Especifica un grupo activo.
+
+        * *PAUSED*: Especifica un grupo inactivo. Los grupos inactivos no entran en el runner, Puede ser tomado com una pausa del grupo. Solo se pueden pausar los grupos que estan basados solo en el procesamiento de actividades.
+
+        * *BUILDING*: Es un grupo que se esta construyendo, Son para los grupos basados en avatares, Ya que estos requieren una evaluacion previa de la data Y un etiquetado posterior.
+
+        * *DELETING*: Indicaun grupo marcado para ser borrado.
+
+      type: string
+      enum: [ACTIVE, PAUSED, BUILDING, DELETING]
+
+    GroupType:
+      description: >
+        *Define el tipo para el Grupo:*
+
+        * TAGS: Especifica que el grupo se basa en Tags. Donde su definicion implica todas las etiquetas definidas
+
+        * TAGS_ALL: Especifica que el grupo se basa en Tags. Donde su definicion implica al menos una de las etiquetas definidas.
+
+        * PURE: Especifica los grupos dinamicos puros. Su membresia es calculada.
+
+        * UNION: Especifica un grupo por la unio de varios grupos.
+
+        * INTERCEPTION: Especifica un grupo por la intersecion de varios grupos.
+      type: string
+      enum: [TAGS, TAGS_ALL, PURE, UNION, INTERCEPTION]
+
+    GroupHistory:
+      description: Especifica un evento de activacion y/o desactivacion.
+      type: object
+      properties:
+        active:
+          description: Se se activo o desactivo.
+          type: boolean
+        date:
+          description: Especifica la echa de la activacion y/o desactivacion.
+          type: object
+
+    DayOfYearID:
+      description: >
+        Especifica Informacion de contexto para calcular el YearDayId de una fecha.
+        Especifica un constrains para los avatares por el campo birthdayId.
+      type: object
+      required:
+      - rangeType
+      properties:
+        fromNow:
+          description: >
+            Especifica el calculo de now, basado en la fecha actual. Este Valor, permite añadir o modificar el valor por defecto del
+            Permite agregar o restar periodos de tiempo o duraciones a la hora y fecha actual.
+            Este valor debera ser parseado por JodaTime como un Periodo de tiempo.
+          type: string
+          example: P1Y2M1W1DT1H1M1S
+        rangeType:
+
+          $ref: '#/components/schemas/DayOfYearIDRanges'
+
+    DayOfYearIDRanges:
+      description: >
+        Especifica los rangos o tipos de rangos soportados para Year Day Id. Especifica el rango a considerar para verificar el id. El YearId a evaluar debe estar en el rango de ids.
+
+        * *DAY*: Especifica que el rango solo incluye la fecha del contexto.
+
+        * *WEEK*: Especifica que el rango a calcular incluya la semana. Basada en la fecha del contexto. La semana empieza el domingo.
+
+        * *FORTNIGHT_1*: Especifica la primera quincena del mes actual.
+
+        * *FORTNIGHT_2*: Especifica la segunda quincena del mes actual.
+
+        * *FORTNIGHT*: Especifica la quincea actual del mes actual.
+
+        * *MONTH*: Especifica el rango para el mes.
+
+        * *QUARTER*: Especifica el current trimestre del contexto.
+
+        * *SEMESTER*: Especifica el current semestre del cobntexto.
+      type: string
+      enum: [DAY, WEEK, FORTNIGHT_1, FORTNIGHT_2, FORTNIGHT, MONTH, QUARTER, SEMESTER]
+
+    ActividadesEnum:
+      description: Las actividades soportadas por aurora.
+      type: string
+      enum: [NO_OP,CREAR_AMIGO_LOTES,CREAR_AMIGO,EDITAR_AMIGO,ELIMINAR_AMIGO,ELIMINAR_CANAL_AMIGO,AGREGAR_CANAL_AMIGO,AGREGAR_ETIQUETA_AMIGO,ELIMINAR_ETIQUETA_AMIGO,ENVIO_EMAIL_AMIGOS,ENVIO_EMAIL_TEST_AMIGOS,ENVIO_EMAIL_AMIGO,VIEW_IFORM,FILL_IFORM,VISITAR_PAGINA_ZNK,OPEN_EMAIL,CLICK_EMAIL,ENVIO_SMS_AMIGOS,ENVIO_SMS_AMIGO,CREAR_CONTENIDO,EDITAR_CONTENIDO,ELIMINAR_CONTENIDO,AGREGAR_EMAIL_USUARIO,ACTUALIZAR_EMAIL_USUARIO,ELIMINAR_EMAIL_USUARIO,REQUEST_CERTIFICAR_CANAL_USUARIO,CERTIFICAR_CANAL_USUARIO,ELIMINAR_CERTIFICAR_CANAL_USUARIO,AGREGAR_TELEFONO_USUARIO,ACTUALIZAR_TELEFONO_USUARIO,ELIMINAR_TELEFONO_USUARIO,ACTUALIZAR_PERFIL,CREAR_IFORM,REGISTRAR_RESP_IFORM,ACTUALIZAR_IFORM,ELIMINAR_IFORM,COMPRAR_PLAN,COTIZAR_PLAN,SIGNAL_CALL,SIGNAL_WRITE,SIGNAL_MEET,SIGNAL_CHAT,SIGNAL_FORM,CONTACTAR_AMIGO,ADOPT_REQUEST,MATURE_REQUEST,RELEASED_REQUEST,FORWARDED_REQUEST,CLOSED_REQUEST,VISITAR_BLOG,EMAIL_CONFIRMATION,EMAIL_BLOCK,EMAIL_SPAM_COMPLAINT,EMAIL_BOUNCED,EMAIL_BOUNCED_SUSPEND,ENVIO_INV_AMIGOS,ENVIO_INV_AMIGO,MAKE_FRIEND,MAKE_FRIEND_CONTACTO,REMOVE_FRIEND,REBOUND_INV,REBOUND_CORREO,ACTUALIZAR_STATUS_INVITACION,ELIMINAR_STATUS_INVITACION,CREAR_INVITACION,LIMPIEZA_SCORING,IREQUEST_COMMENT,IREQUEST_CLOSE,IREQUEST_REOPEN,IREQUEST_ABORT,IREQUEST_TAKE,IREQUEST_RELEASE,IREQUEST_ASSIGN_AVATAR,IREQUEST_REMOVE_AVATAR,IREQUEST_ADD_TASK,IREQUEST_REMOVE_TASK,IREQUEST_COMPLETE_TASK,IREQUEST_INCOMPLETE_TASK,IREQUEST_POSTPONE]
+
+    ApiError:
+      type: object
+      properties:
+        message:
+          type: string
+          description: El mensaje a tranmitir.
+        url:
+          type: string
+          description: Request que genero el error
+        success:
+          type: boolean
+          description: Indica si se efectuo correctamente la operacion
+        isException:
+          type: boolean
+          description: Indica si ocurrio una excepcion
+        exception:
+          type: string
+          description: La clase de la excepcion.
+        exceptionMessage:
+          type: string
+          description: mensaje de la excepcion.
+        exceptionCause:
+          type: string
+          description: El mensaje de la causa de la excepcion.
+        stackTrace:
+          type: array
+          items:
+            $ref: '#/components/schemas/StackTraceItem'
+    StackTraceItem:
+      type: object
+      properties:
+        methodName:
+          type: string
+          description: Nombre del metodo.
+          example: decide
+        fileName:
+          type: string
+          description: El nombre del archivo.
+        lineNumber:
+          type: integer
+          description: Numero de la linea.
+        className:
+          type: string
+          description: Nombre de la clase.
+        nativeMethod:
+          type: boolean
+          description: Indica si el metodo es native.
+
+  securitySchemes:
+    kansa:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: 'https://kansa.imolko.com/auth/realms/imolko/protocol/openid-connect/auth'
+          scopes: {}
+        password:
+          tokenUrl: 'https://kansa.imolko.com/auth/realms/imolko/protocol/openid-connect/token'
+          scopes: {}
+        authorizationCode:
+          authorizationUrl: 'https://kansa.imolko.com/auth/realms/imolko/protocol/openid-connect/auth'
+          tokenUrl: 'https://kansa.imolko.com/auth/realms/imolko/protocol/openid-connect/token'
+          scopes: {}
+        clientCredentials:
+          tokenUrl: 'https://kansa.imolko.com/auth/realms/imolko/protocol/openid-connect/token'
+          scopes: {}
+    kansa-alfa:
+      # type: openIdConnect
+      # openIdConnectUrl: 'https://kansa2.groups.imolko.net/auth/realms/imolko/.well-known/openid-configuration'
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: 'https://kansa.groups.imolko.net/auth/realms/imolko/protocol/openid-connect/auth'
+          scopes: {}
+        password:
+          tokenUrl: 'https://kansa.groups.imolko.net/auth/realms/imolko/protocol/openid-connect/token'
+          scopes: {}
+        authorizationCode:
+          authorizationUrl: 'https://kansa.groups.imolko.net/auth/realms/imolko/protocol/openid-connect/auth'
+          tokenUrl: 'https://kansa.groups.imolko.net/auth/realms/imolko/protocol/openid-connect/token'
+          scopes: {}
+        clientCredentials:
+          tokenUrl: 'https://kansa.groups.imolko.net/auth/realms/imolko/protocol/openid-connect/token'
+          scopes: {}
+    kansa-dev:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: 'https://kansa.dev.imolko.net/auth/realms/imolko/protocol/openid-connect/auth'
+          scopes: {}
+        password:
+          tokenUrl: 'https://kansa.dev.imolko.net/auth/realms/imolko/protocol/openid-connect/token'
+          scopes: {}
+        authorizationCode:
+          authorizationUrl: 'https://kansa.dev.imolko.net/auth/realms/imolko/protocol/openid-connect/auth'
+          tokenUrl: 'https://kansa.dev.imolko.net/auth/realms/imolko/protocol/openid-connect/token'
+          scopes: {}
+        clientCredentials:
+          tokenUrl: 'https://kansa.dev.imolko.net/auth/realms/imolko/protocol/openid-connect/token'
+          scopes: {}
+
+  requestBodies: {}
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            exception: "org.springframework.security.access.AccessDeniedException"
+            exceptionCause: "AccessDeniedException: Access is denied"
+            success: false
+            isException": true
+            stackTrace:
+            - methodName: "decide"
+              fileName: "AffirmativeBased.java"
+              lineNumber: 83
+              className: "org.springframework.security.access.vote.AffirmativeBased"
+              nativeMethod: false
+            - methodName: ...
+            message: "Access is denied"
+            url: "https://imolko.com/aurora-ws/users"
+            exceptionMessage: "Access is denied"
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            exception: "org.springframework.security.access.AccessDeniedException"
+            exceptionCause: "AccessDeniedException: Access is denied"
+            success: false
+            isException": true
+            stackTrace:
+            - methodName: "decide"
+              fileName: "AffirmativeBased.java"
+              lineNumber: 83
+              className: "org.springframework.security.access.vote.AffirmativeBased"
+              nativeMethod: false
+            - methodName: ...
+            message: "Access is denied"
+            url: "https://imolko.com/aurora-ws/users"
+            exceptionMessage: "Access is denied"
